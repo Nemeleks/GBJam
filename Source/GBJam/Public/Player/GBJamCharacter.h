@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "PaperCharacter.h"
+#include "Interfaces/Damageable.h"
 #include "GBJamCharacter.generated.h"
 
 class UTextRenderComponent;
@@ -17,7 +18,7 @@ class UTextRenderComponent;
  * The Sprite component (inherited from APaperCharacter) handles the visuals
  */
 UCLASS(config=Game)
-class AGBJamCharacter : public APaperCharacter
+class AGBJamCharacter : public APaperCharacter, public IDamageable
 {
 	GENERATED_BODY()
 
@@ -62,6 +63,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
 	class UPaperFlipbook* FireAnimation;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Respawn")
+	float RespawnCooldown = 2.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attack")
+	int32 HitDamage = 1;
+
 	/** Called to choose the correct animation to play based on the character's movement state */
 	void UpdateAnimation();
 
@@ -84,23 +91,36 @@ protected:
 	void OnDeath();
 
 	UFUNCTION()
-	void OnTakeDamage(int32 DamageAmount);
+	void StopHitAnim();
 
 	UFUNCTION()
-	void StopHitAnim();
+	void HitOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
+
+	UFUNCTION()
+	void EndHitOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 public:
 	AGBJamCharacter();
 
+	UPrimitiveComponent* GetCollider() const {return Cast<UPrimitiveComponent>(GetRootComponent());}
 	/** Returns SideViewCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetSideViewCameraComponent() const { return SideViewCameraComponent; }
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 
+	virtual void ApplyDamage(int32 DamageAmount) override;
+
 private:
 	void Hit();
+	void Respawn();
 
 	bool bIsHitting = false;
+	bool bIsAlive = true;
+	FTimerHandle RespawnTimerHandle;
+
+	IDamageable* Enemy = nullptr;
 };
+
 
 

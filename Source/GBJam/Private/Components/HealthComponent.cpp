@@ -35,13 +35,13 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 void UHealthComponent::TakeDamage(int32 Damage)
 {
-	if (CurrentHealth - Damage == 0)
+	CurrentHealth = FMath::Clamp(CurrentHealth - Damage,0, MaxHealth);
+	
+	if (CurrentHealth == 0)
 	{
+		// ToDo EndGame
 		OnDeath.Broadcast();
 	}
-	else
-	{
-		CurrentHealth = CurrentHealth - Damage;
-	}
+	
 }
 

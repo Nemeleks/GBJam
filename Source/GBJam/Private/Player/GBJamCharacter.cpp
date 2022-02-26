@@ -83,15 +83,28 @@ AGBJamCharacter::AGBJamCharacter()
 
 	HitCollider = CreateDefaultSubobject<UBoxComponent>(TEXT("HitCollider"));
 	HitCollider->SetupAttachment(GetRootComponent());
+	HitCollider->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::HitOverlap);
+	HitCollider->OnComponentEndOverlap.AddDynamic(this, &ThisClass::EndHitOverlap);
 	
 }
 
 void AGBJamCharacter::Hit()
 {
-	if (HitAnimation)
+	bIsHitting = true;
+	if (Enemy)
 	{
-		bIsHitting = true;
+		Enemy->ApplyDamage(HitDamage);
 	}
+}
+
+void AGBJamCharacter::Respawn()
+{
+	FVector RespawnLocation = GetWorld()->GetFirstPlayerController()->GetSpawnLocation();
+	SetActorLocation(RespawnLocation);
+	GetWorld()->GetFirstPlayerController()->Possess(this);
+	bIsAlive = true;
+	bIsHitting = false;
+	GetWorld()->GetTimerManager().ClearTimer(RespawnTimerHandle);
 }
 
 void AGBJamCharacter::StopHitAnim()
@@ -99,12 +112,36 @@ void AGBJamCharacter::StopHitAnim()
 	bIsHitting = false;
 }
 
+void AGBJamCharacter::HitOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor == this)
+	{
+		return;
+	}
+	if (const auto EnemyPawn = Cast<IDamageable>(OtherActor))
+	{
+		Enemy = EnemyPawn;
+	}
+}
+void AGBJamCharacter::EndHitOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (Enemy)
+	{
+		Enemy = nullptr;
+	}
+}
 //////////////////////////////////////////////////////////////////////////
 // Animation
 
 void AGBJamCharacter::UpdateAnimation()
 {
-	if (bIsHitting)
+	if (!bIsAlive)
+	{
+		GetSprite()->SetFlipbook(DeathAnimation);
+	}
+	else if (bIsHitting)
 	{
 		GetSprite()->SetFlipbook(HitAnimation);
 	}
@@ -126,9 +163,6 @@ void AGBJamCharacter::UpdateAnimation()
 			GetSprite()->SetFlipbook(DesiredAnimation);
 		}
 	}
-	
-
-
 }
 
 void AGBJamCharacter::Tick(float DeltaSeconds)
@@ -157,9 +191,12 @@ void AGBJamCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInp
 
 void AGBJamCharacter::OnDeath()
 {
+	bIsAlive = false;
+	UnPossessed();
+	GetWorld()->GetTimerManager().SetTimer(RespawnTimerHandle, this, &AGBJamCharacter::Respawn, RespawnCooldown);
 }
 
-void AGBJamCharacter::OnTakeDamage(int32 DamageAmount)
+void AGBJamCharacter::ApplyDamage(int32 DamageAmount)
 {
 	if (HealthComponent)
 	{

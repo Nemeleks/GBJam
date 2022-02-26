@@ -22,4 +22,6 @@ class GBJAM_API IDamageable
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
+
+	virtual void ApplyDamage(int32 DamageAmount) = 0;
 };
