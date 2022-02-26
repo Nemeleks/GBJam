@@ -4,11 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "PaperCharacter.h"
-#include "GameFramework/Pawn.h"
 #include "Interfaces/Damageable.h"
 #include "BaseEnemy.generated.h"
 
-UCLASS()
+UCLASS(Abstract)
 class GBJAM_API ABaseEnemy : public APaperCharacter, public IDamageable
 {
 	GENERATED_BODY()
@@ -38,6 +37,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attack")
 	float AttackRange = 100.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attack")
+	float AttackRate = 1.f;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animation")
 	class UPaperFlipbook* IdleAnimation;
@@ -51,6 +53,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animation")
 	class UPaperFlipbook* AttackAnimation;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animation")
+	class UPaperFlipbook* JumpAnimation;
+
 	void UpdateAnimation();
 
 	void UpdatePawn();
@@ -61,8 +66,9 @@ protected:
 	UFUNCTION()
 	void HitOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
+	
+	bool bIsAttacking = false;
 
-	virtual void Attack();
 
 public:
 	// Called every frame
@@ -75,16 +81,18 @@ public:
 
 	float GetTargetingRange() const {return TargetingRange;}
 	float GetAttackRange() const {return AttackRange;}
+	virtual void Attack();
+	virtual void StopAttacking();
+	bool GetIsAlive() const {return bIsAlive;}
 
 private:
 
 	FTimerHandle DestroyTimerHandle;
 	FTimerHandle ChangeSpriteColorTimerHandle;
+	
 	bool bIsAlive = true;
-	bool bIsAttacking = false;
 
 	void DestroyPawn();
-	void StopAttacking();
 	void ResetSpriteColor();
 
 	float PrevDirection;

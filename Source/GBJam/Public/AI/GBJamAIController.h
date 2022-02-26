@@ -24,6 +24,9 @@ private:
 	class ABaseEnemy* ControlledPawn;
 
 	UPROPERTY()
-	ACharacter* Player;
+	class AGBJamCharacter* Player;
+
+	void Targeting();
+	void RotateToPlayer();
 	
 };

@@ -9,8 +9,10 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "Camera/CameraComponent.h"
+#include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/HealthComponent.h"
+#include "Projectile/GBJamProjectile.h"
 
 DEFINE_LOG_CATEGORY_STATIC(SideScrollerCharacter, Log, All);
 
@@ -85,6 +87,9 @@ AGBJamCharacter::AGBJamCharacter()
 	HitCollider->SetupAttachment(GetRootComponent());
 	HitCollider->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::HitOverlap);
 	HitCollider->OnComponentEndOverlap.AddDynamic(this, &ThisClass::EndHitOverlap);
+
+	ProjectileSpawnPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("ProjectileSpawnPoint"));
+	ProjectileSpawnPoint->SetupAttachment(RootComponent);
 	
 }
 
@@ -97,6 +102,28 @@ void AGBJamCharacter::Hit()
 	}
 }
 
+void AGBJamCharacter::Fire()
+{
+	if (!ProjectileClass)
+	{
+		return;
+	}
+	
+	if (bLearnFireSkill && bCanFire)
+	{
+		bCanFire = false;
+
+		const FVector SpawnLocation = ProjectileSpawnPoint->GetComponentLocation();
+		const FRotator SpawnRotation = ProjectileSpawnPoint->GetComponentRotation();
+		const auto Projectile = GetWorld()->SpawnActor<AGBJamProjectile>(ProjectileClass, SpawnLocation, SpawnRotation);
+		if (Projectile)
+		{
+			Projectile->SetDamage(FireDamage);
+		}
+		GetWorld()->GetTimerManager().SetTimer(FireTimerHandle, this, &ThisClass::FireCooldown, FireRate);
+	}
+}
+
 void AGBJamCharacter::Respawn()
 {
 	FVector RespawnLocation = GetWorld()->GetFirstPlayerController()->GetSpawnLocation();
@@ -105,6 +132,12 @@ void AGBJamCharacter::Respawn()
 	bIsAlive = true;
 	bIsHitting = false;
 	GetWorld()->GetTimerManager().ClearTimer(RespawnTimerHandle);
+}
+
+void AGBJamCharacter::FireCooldown()
+{
+	bCanFire = true;
+	GetWorld()->GetTimerManager().ClearTimer(FireTimerHandle);
 }
 
 void AGBJamCharacter::StopHitAnim()
@@ -140,6 +173,11 @@ void AGBJamCharacter::UpdateAnimation()
 	if (!bIsAlive)
 	{
 		GetSprite()->SetFlipbook(DeathAnimation);
+	}
+
+	else if (!bCanFire)
+	{
+		GetSprite()->SetFlipbook(FireAnimation);
 	}
 	else if (bIsHitting)
 	{
@@ -183,6 +221,7 @@ void AGBJamCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInp
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 	PlayerInputComponent->BindAction("Hit", IE_Pressed, this, &AGBJamCharacter::Hit);
 	PlayerInputComponent->BindAction("Hit", IE_Released, this, &AGBJamCharacter::StopHitAnim);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AGBJamCharacter::Fire);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AGBJamCharacter::MoveRight);
 
 	PlayerInputComponent->BindTouch(IE_Pressed, this, &AGBJamCharacter::TouchStarted);

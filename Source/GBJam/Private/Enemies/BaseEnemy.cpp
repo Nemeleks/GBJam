@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Enemys/BaseEnemy.h"
+#include "Enemies/BaseEnemy.h"
 
 #include "AIController.h"
 #include "PaperFlipbookComponent.h"
@@ -9,6 +9,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/HealthComponent.h"
 #include "Components/SphereComponent.h"
+#include "GameFramework/PawnMovementComponent.h"
 #include "Player/GBJamCharacter.h"
 
 
@@ -64,8 +65,7 @@ void ABaseEnemy::DestroyPawn()
 
 void ABaseEnemy::StopAttacking()
 {
-	bIsAttacking = false;
-	GetSprite()->OnFinishedPlaying.Clear();
+
 }
 
 void ABaseEnemy::ResetSpriteColor()
@@ -84,7 +84,14 @@ void ABaseEnemy::UpdateAnimation()
 	else if (bIsAttacking)
 	{
 		GetSprite()->SetFlipbook(AttackAnimation);
-		GetSprite()->OnFinishedPlaying.AddDynamic(this, &ThisClass::StopAttacking);
+	}
+
+	else if (GetMovementComponent()->IsFalling())
+	{
+		if (JumpAnimation)
+		{
+			GetSprite()->SetFlipbook(JumpAnimation);
+		}
 	}
 	
 	else
@@ -134,15 +141,16 @@ void ABaseEnemy::HitOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 	const auto Player = Cast<AGBJamCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	if (Player && OtherActor == Player && OtherComp == Player->GetCollider())
 	{
-		UE_LOG(LogTemp, Error, TEXT("Player"));
+
 		Player->ApplyDamage(HitDamage);
 	}
 }
 
 void ABaseEnemy::Attack()
 {
-	if (!bIsAttacking)
+	if (!AttackAnimation)
 	{
-		bIsAttacking = true;
+		return;
 	}
+	
 }

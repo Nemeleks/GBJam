@@ -39,6 +39,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
 	class UBoxComponent* HitCollider;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
+	class UArrowComponent* ProjectileSpawnPoint;
 	
 	// The animation to play while running around
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
@@ -68,6 +71,15 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attack")
 	int32 HitDamage = 1;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attack")
+	int32 FireDamage = 2;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attack")
+	TSubclassOf<class AGBJamProjectile> ProjectileClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attack")
+	float FireRate = 1.f;
 
 	/** Called to choose the correct animation to play based on the character's movement state */
 	void UpdateAnimation();
@@ -111,13 +123,20 @@ public:
 
 	virtual void ApplyDamage(int32 DamageAmount) override;
 
+	bool GetIsAlive() const {return bIsAlive;}
+
 private:
 	void Hit();
+	void Fire();
 	void Respawn();
+	void FireCooldown();
 
 	bool bIsHitting = false;
 	bool bIsAlive = true;
+	bool bCanFire = true;
+	bool bLearnFireSkill = true;
 	FTimerHandle RespawnTimerHandle;
+	FTimerHandle FireTimerHandle;
 
 	IDamageable* Enemy = nullptr;
 };

@@ -4,7 +4,8 @@
 #include "AI/GBJamAIController.h"
 
 #include "DrawDebugHelpers.h"
-#include "Enemys/BaseEnemy.h"
+#include "Enemies/BaseEnemy.h"
+#include "Player/GBJamCharacter.h"
 
 void AGBJamAIController::BeginPlay()
 {
@@ -15,7 +16,7 @@ void AGBJamAIController::BeginPlay()
 	{
 		ControlledPawn = EnemyPawn;
 	}
-	const auto PlayerCharacter = GetWorld()->GetFirstPlayerController()->GetCharacter();
+	const auto PlayerCharacter = Cast<AGBJamCharacter>(GetWorld()->GetFirstPlayerController()->GetCharacter());
 	if (PlayerCharacter)
 	{
 		Player = PlayerCharacter;
@@ -25,9 +26,45 @@ void AGBJamAIController::BeginPlay()
 void AGBJamAIController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	if (ControlledPawn)
+
+	if (ControlledPawn && Player)
 	{
-		ControlledPawn->AddMovementInput(FVector(1.f,0.f,0.f), 1);
+		Targeting();
 	}
 	
+}
+
+void AGBJamAIController::Targeting()
+{
+
+	if (FVector::DistSquared(ControlledPawn->GetActorLocation(), Player->GetActorLocation()) <= FMath::Square(ControlledPawn->GetAttackRange()))
+	{
+		RotateToPlayer();
+		if (Player->GetIsAlive() && ControlledPawn->GetIsAlive())
+		{
+			ControlledPawn->Attack();
+		}
+		
+	}
+	else if(FVector::DistSquared(ControlledPawn->GetActorLocation(), Player->GetActorLocation()) <= FMath::Square(ControlledPawn->GetTargetingRange()))
+	{
+		RotateToPlayer();
+		ControlledPawn->AddMovementInput(ControlledPawn->GetActorForwardVector(), 1);
+	}
+
+	
+}
+
+void AGBJamAIController::RotateToPlayer()
+{
+	const FVector PawnLocation = ControlledPawn->GetActorLocation();
+	const FVector ForwardDirection = ControlledPawn->GetActorForwardVector();
+	FVector MoveDirection = Player->GetActorLocation() - PawnLocation;
+	MoveDirection.Normalize();
+	float ForwardAngle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(ForwardDirection, MoveDirection)));
+	if (ForwardAngle >= 170.f)
+	{
+		UE_LOG(LogTemp, Error, TEXT("AddYaw"));
+		ControlledPawn->SetActorRotation(ControlledPawn->GetActorRotation() + FRotator(0.f,180.f,0.f));
+	}
 }
