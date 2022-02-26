@@ -126,8 +126,7 @@ void AGBJamCharacter::Fire()
 
 void AGBJamCharacter::Respawn()
 {
-	FVector RespawnLocation = GetWorld()->GetFirstPlayerController()->GetSpawnLocation();
-	SetActorLocation(RespawnLocation);
+	SetActorLocation(RespawnPoint);
 	GetWorld()->GetFirstPlayerController()->Possess(this);
 	bIsAlive = true;
 	bIsHitting = false;

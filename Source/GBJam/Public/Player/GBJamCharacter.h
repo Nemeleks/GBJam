@@ -34,6 +34,7 @@ class AGBJamCharacter : public APaperCharacter, public IDamageable
 	virtual void Tick(float DeltaSeconds) override;
 protected:
 
+	virtual void BeginPlay() override;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
 	class UHealthComponent* HealthComponent;
 
@@ -131,12 +132,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void EnableFiring(){bHasLearntFireSkill = true;}
 
+	void SetRespawnPoint(FVector NewPoint) {RespawnPoint = NewPoint;}
+
 private:
 	void Hit();
 	void Fire();
 	void Respawn();
 	void FireCooldown();
-
+	
+	FVector RespawnPoint;
 	bool bIsHitting = false;
 	bool bIsAlive = true;
 	bool bCanFire = true;
@@ -146,6 +150,12 @@ private:
 
 	IDamageable* Enemy = nullptr;
 };
+
+inline void AGBJamCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	RespawnPoint = GetWorld()->GetFirstPlayerController()->GetSpawnLocation();
+}
 
 
 
