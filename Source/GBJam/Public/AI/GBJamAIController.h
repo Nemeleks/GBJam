@@ -19,6 +19,8 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
+	void SetControlledPawn(class ABaseEnemy* Enemy) { ControlledPawn = Enemy;}
+
 private:
 	UPROPERTY()
 	class ABaseEnemy* ControlledPawn;

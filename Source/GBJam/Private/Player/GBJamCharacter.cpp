@@ -109,7 +109,7 @@ void AGBJamCharacter::Fire()
 		return;
 	}
 	
-	if (bLearnFireSkill && bCanFire)
+	if (bHasLearntFireSkill && bCanFire)
 	{
 		bCanFire = false;
 

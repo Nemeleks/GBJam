@@ -125,6 +125,12 @@ public:
 
 	bool GetIsAlive() const {return bIsAlive;}
 
+	UFUNCTION(BlueprintCallable)
+	void EnableDoubleJump() {JumpMaxCount = 2;}
+
+	UFUNCTION(BlueprintCallable)
+	void EnableFiring(){bHasLearntFireSkill = true;}
+
 private:
 	void Hit();
 	void Fire();
@@ -134,7 +140,7 @@ private:
 	bool bIsHitting = false;
 	bool bIsAlive = true;
 	bool bCanFire = true;
-	bool bLearnFireSkill = true;
+	bool bHasLearntFireSkill = false;
 	FTimerHandle RespawnTimerHandle;
 	FTimerHandle FireTimerHandle;
 
