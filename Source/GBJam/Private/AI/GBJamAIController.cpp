@@ -5,6 +5,7 @@
 
 #include "DrawDebugHelpers.h"
 #include "Enemies/BaseEnemy.h"
+#include "Enemies/Slug.h"
 #include "Player/GBJamCharacter.h"
 
 void AGBJamAIController::BeginPlay()
@@ -42,6 +43,10 @@ void AGBJamAIController::Targeting()
 		RotateToPlayer();
 		if (Player->GetIsAlive() && ControlledPawn->GetIsAlive())
 		{
+			if (const auto Slug = Cast<ASlug>(ControlledPawn))
+			{
+				Slug->AddMovementInput(Slug->GetActorForwardVector(), 1);
+			}
 			ControlledPawn->Attack();
 		}
 		

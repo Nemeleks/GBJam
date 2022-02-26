@@ -81,7 +81,7 @@ void ABaseEnemy::UpdateAnimation()
 		GetSprite()->SetLooping(false);
 		GetSprite()->SetFlipbook(DeathAnimation);
 	}
-	else if (bIsAttacking)
+	else if (bIsAttacking && AttackAnimation)
 	{
 		GetSprite()->SetFlipbook(AttackAnimation);
 	}
