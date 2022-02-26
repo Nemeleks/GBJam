@@ -32,6 +32,13 @@ class AGBJamCharacter : public APaperCharacter
 	UTextRenderComponent* TextComponent;
 	virtual void Tick(float DeltaSeconds) override;
 protected:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
+	class UHealthComponent* HealthComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
+	class UBoxComponent* HitCollider;
+	
 	// The animation to play while running around
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
 	class UPaperFlipbook* RunningAnimation;
@@ -73,6 +80,15 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 	// End of APawn interface
 
+	UFUNCTION()
+	void OnDeath();
+
+	UFUNCTION()
+	void OnTakeDamage(int32 DamageAmount);
+
+	UFUNCTION()
+	void StopHitAnim();
+
 public:
 	AGBJamCharacter();
 
@@ -80,4 +96,11 @@ public:
 	FORCEINLINE class UCameraComponent* GetSideViewCameraComponent() const { return SideViewCameraComponent; }
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+
+private:
+	void Hit();
+
+	bool bIsHitting = false;
 };
+
+

@@ -9,6 +9,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "Camera/CameraComponent.h"
+#include "Components/BoxComponent.h"
+#include "Components/HealthComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(SideScrollerCharacter, Log, All);
 
@@ -75,6 +77,26 @@ AGBJamCharacter::AGBJamCharacter()
 	// Enable replication on the Sprite component so animations show up when networked
 	GetSprite()->SetIsReplicated(true);
 	bReplicates = true;
+
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));
+	HealthComponent->OnDeath.AddDynamic(this, &ThisClass::OnDeath);
+
+	HitCollider = CreateDefaultSubobject<UBoxComponent>(TEXT("HitCollider"));
+	HitCollider->SetupAttachment(GetRootComponent());
+	
+}
+
+void AGBJamCharacter::Hit()
+{
+	if (HitAnimation)
+	{
+		bIsHitting = true;
+	}
+}
+
+void AGBJamCharacter::StopHitAnim()
+{
+	bIsHitting = false;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -82,11 +104,16 @@ AGBJamCharacter::AGBJamCharacter()
 
 void AGBJamCharacter::UpdateAnimation()
 {
+	if (bIsHitting)
+	{
+		GetSprite()->SetFlipbook(HitAnimation);
+	}
 	
-	if (GetMovementComponent()->IsFalling())
+	else if (GetMovementComponent()->IsFalling())
 	{
 		GetSprite()->SetFlipbook(JumpAnimation);
 	}
+	
 	else
 	{
 		const FVector PlayerVelocity = GetVelocity();
@@ -120,10 +147,24 @@ void AGBJamCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInp
 	// Note: the 'Jump' action and the 'MoveRight' axis are bound to actual keys/buttons/sticks in DefaultInput.ini (editable from Project Settings..Input)
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	PlayerInputComponent->BindAction("Hit", IE_Pressed, this, &AGBJamCharacter::Hit);
+	PlayerInputComponent->BindAction("Hit", IE_Released, this, &AGBJamCharacter::StopHitAnim);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AGBJamCharacter::MoveRight);
 
 	PlayerInputComponent->BindTouch(IE_Pressed, this, &AGBJamCharacter::TouchStarted);
 	PlayerInputComponent->BindTouch(IE_Released, this, &AGBJamCharacter::TouchStopped);
+}
+
+void AGBJamCharacter::OnDeath()
+{
+}
+
+void AGBJamCharacter::OnTakeDamage(int32 DamageAmount)
+{
+	if (HealthComponent)
+	{
+		HealthComponent->TakeDamage(DamageAmount);
+	}
 }
 
 void AGBJamCharacter::MoveRight(float Value)
