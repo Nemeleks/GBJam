@@ -13,6 +13,7 @@
 #include "Components/BoxComponent.h"
 #include "Components/HealthComponent.h"
 #include "Projectile/GBJamProjectile.h"
+#include "Tools/LadderBlock.h"
 
 DEFINE_LOG_CATEGORY_STATIC(SideScrollerCharacter, Log, All);
 
@@ -139,6 +140,66 @@ void AGBJamCharacter::FireCooldown()
 	GetWorld()->GetTimerManager().ClearTimer(FireTimerHandle);
 }
 
+void AGBJamCharacter::Climbing()
+{
+
+	FHitResult HitResult;
+	FVector TraceStart = GetActorLocation();
+	FVector TraceEnd = TraceStart + FVector(0.f,-15.f,0.f);
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility))
+	{
+		if (Cast<ALadderBlock>(HitResult.Actor))
+		{
+			
+			bCanClimb = true;
+			auto MC = Cast<UCharacterMovementComponent>(GetMovementComponent());
+			if (MC)
+			{
+				UE_LOG(LogTemp, Error, TEXT("Movement FALSE"));
+				MC->Velocity = FVector::ZeroVector;
+				MC->MaxWalkSpeed = 11000;
+				MC->bApplyGravityWhileJumping = false;
+				MC->GravityScale = 0;
+			}
+		}
+		else
+		{
+			bCanClimb = false;
+			auto MC = Cast<UCharacterMovementComponent>(GetMovementComponent());
+			if (MC)
+			{
+				UE_LOG(LogTemp, Error, TEXT("Movement TRUE"));
+				MC->bApplyGravityWhileJumping = true;
+				MC->GravityScale = 2;
+				MC->MaxWalkSpeed = 300;
+			}
+		}
+	}
+	else
+	{
+		bCanClimb = false;
+		auto MC = Cast<UCharacterMovementComponent>(GetMovementComponent());
+		if (MC)
+		{
+			UE_LOG(LogTemp, Error, TEXT("Movement TRUE"));
+			MC->bApplyGravityWhileJumping = true;
+			MC->GravityScale = 2;
+			MC->MaxWalkSpeed = 300;
+		}
+	}
+}
+
+void AGBJamCharacter::Climb(float Value)
+{
+	
+	if (bCanClimb)
+	{
+		LaunchCharacter(GetActorUpVector()*Value*500,false,true);
+	}
+	
+	
+}
+
 void AGBJamCharacter::StopHitAnim()
 {
 	bIsHitting = false;
@@ -206,7 +267,8 @@ void AGBJamCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 	
-	UpdateCharacter();	
+	UpdateCharacter();
+	Climbing();
 }
 
 
@@ -222,6 +284,7 @@ void AGBJamCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInp
 	PlayerInputComponent->BindAction("Hit", IE_Released, this, &AGBJamCharacter::StopHitAnim);
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AGBJamCharacter::Fire);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AGBJamCharacter::MoveRight);
+	PlayerInputComponent->BindAxis("Climb", this, &AGBJamCharacter::Climb);
 
 	PlayerInputComponent->BindTouch(IE_Pressed, this, &AGBJamCharacter::TouchStarted);
 	PlayerInputComponent->BindTouch(IE_Released, this, &AGBJamCharacter::TouchStopped);
@@ -247,7 +310,15 @@ void AGBJamCharacter::MoveRight(float Value)
 	/*UpdateChar();*/
 
 	// Apply the input to the character motion
-	AddMovementInput(FVector(1.0f, 0.0f, 0.0f), Value);
+	if (bCanClimb)
+	{
+		AddMovementInput(FVector(500.0f, 0.0f, 0.0f), Value);
+	}
+	else
+	{
+		AddMovementInput(FVector(1.0f, 0.0f, 0.0f), Value);
+	}
+	
 }
 
 void AGBJamCharacter::TouchStarted(const ETouchIndex::Type FingerIndex, const FVector Location)

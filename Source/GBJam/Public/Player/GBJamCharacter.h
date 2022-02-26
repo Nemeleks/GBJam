@@ -65,6 +65,9 @@ protected:
 	class UPaperFlipbook* ClimbAnimation;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
+	class UPaperFlipbook* ClimbStandAnimation;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
 	class UPaperFlipbook* FireAnimation;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Respawn")
@@ -139,12 +142,16 @@ private:
 	void Fire();
 	void Respawn();
 	void FireCooldown();
+	void Climbing();
+	void Climb(float Value);
 	
 	FVector RespawnPoint;
 	bool bIsHitting = false;
 	bool bIsAlive = true;
 	bool bCanFire = true;
 	bool bHasLearntFireSkill = false;
+	bool bIsClimbing = false;
+	bool bCanClimb = false;
 	FTimerHandle RespawnTimerHandle;
 	FTimerHandle FireTimerHandle;
 
