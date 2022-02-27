@@ -43,12 +43,21 @@ void AGBJamProjectile::HitOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 			Enemy->ApplyDamage(Damage);
 			Destroy();
 		}
+		else if (!Cast<AGBJamCharacter>(OtherActor))
+		{
+			Destroy();
+		}
+		
 	}
 	else
 	{
 		if (const auto Player = Cast<AGBJamCharacter>(OtherActor))
 		{
 			Player->ApplyDamage(Damage);
+			Destroy();
+		}
+		else if (!Cast<ABaseEnemy>(OtherActor))
+		{
 			Destroy();
 		}
 	}
