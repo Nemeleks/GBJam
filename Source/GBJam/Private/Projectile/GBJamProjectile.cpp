@@ -43,7 +43,7 @@ void AGBJamProjectile::HitOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 			Enemy->ApplyDamage(Damage);
 			Destroy();
 		}
-		else if (!Cast<AGBJamCharacter>(OtherActor))
+		else if (!Cast<AGBJamCharacter>(OtherActor) && !Cast<AGBJamProjectile>(OtherActor))
 		{
 			Destroy();
 		}
@@ -56,7 +56,7 @@ void AGBJamProjectile::HitOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 			Player->ApplyDamage(Damage);
 			Destroy();
 		}
-		else if (!Cast<ABaseEnemy>(OtherActor))
+		else if (!Cast<ABaseEnemy>(OtherActor) && !Cast<AGBJamProjectile>(OtherActor))
 		{
 			Destroy();
 		}
