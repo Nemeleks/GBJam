@@ -45,3 +45,8 @@ void UHealthComponent::TakeDamage(int32 Damage)
 	
 }
 
+void UHealthComponent::SetMaxHP()
+{
+	CurrentHealth = MaxHealth;
+}
+

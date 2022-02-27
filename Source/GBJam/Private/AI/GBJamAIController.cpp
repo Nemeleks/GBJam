@@ -40,9 +40,10 @@ void AGBJamAIController::Targeting()
 
 	if (FVector::DistSquared(ControlledPawn->GetActorLocation(), Player->GetActorLocation()) <= FMath::Square(ControlledPawn->GetAttackRange()))
 	{
-		RotateToPlayer();
+		
 		if (Player->GetIsAlive() && ControlledPawn->GetIsAlive())
 		{
+			RotateToPlayer();
 			if (const auto Slug = Cast<ASlug>(ControlledPawn))
 			{
 				Slug->AddMovementInput(Slug->GetActorForwardVector(), 1);
@@ -53,8 +54,12 @@ void AGBJamAIController::Targeting()
 	}
 	else if(FVector::DistSquared(ControlledPawn->GetActorLocation(), Player->GetActorLocation()) <= FMath::Square(ControlledPawn->GetTargetingRange()))
 	{
-		RotateToPlayer();
-		ControlledPawn->AddMovementInput(ControlledPawn->GetActorForwardVector(), 1);
+		if (Player->GetIsAlive() && ControlledPawn->GetIsAlive())
+		{
+			RotateToPlayer();
+			ControlledPawn->AddMovementInput(ControlledPawn->GetActorForwardVector(), 1);
+		}
+		
 	}
 
 	
@@ -67,7 +72,7 @@ void AGBJamAIController::RotateToPlayer()
 	FVector MoveDirection = Player->GetActorLocation() - PawnLocation;
 	MoveDirection.Normalize();
 	float ForwardAngle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(ForwardDirection, MoveDirection)));
-	if (ForwardAngle >= 170.f)
+	if (ForwardAngle > 90.f)
 	{
 		UE_LOG(LogTemp, Error, TEXT("AddYaw"));
 		ControlledPawn->SetActorRotation(ControlledPawn->GetActorRotation() + FRotator(0.f,180.f,0.f));

@@ -35,6 +35,7 @@ public:
 	int32 GetCurrentHealth() const {return CurrentHealth;}
 
 	void TakeDamage(int32 Damage);
+	void SetMaxHP();
 
 private:
 	int32 CurrentHealth;

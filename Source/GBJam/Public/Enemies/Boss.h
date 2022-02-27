@@ -3,45 +3,32 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BaseEnemy.h"
+#include "Scorpion.h"
 #include "GameFramework/Character.h"
-#include "Slug.generated.h"
+#include "Boss.generated.h"
 
 UCLASS()
-class GBJAM_API ASlug : public ABaseEnemy
+class GBJAM_API ABoss : public AScorpion
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
-	ASlug();
+	ABoss();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
-	class UArrowComponent* AttackDirection;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
-	class USphereComponent* HitCollider;
-
-
+	class UBoxComponent* HitCollider;
 
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void Attack() override;
-	virtual void StopAttacking() override;
-
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	//UFUNCTION()
-	//void OverlapFunc(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-//	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-private:
-	FTimerHandle AttackRateTimerHandle;
+	UArrowComponent* GetProjectileSpawnPoint() const {return ProjectileSpawnPoint;}
 };

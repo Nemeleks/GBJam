@@ -9,6 +9,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/HealthComponent.h"
 #include "Components/SphereComponent.h"
+#include "Core/ToolsSubsystem.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "Player/GBJamCharacter.h"
 
@@ -31,6 +32,11 @@ ABaseEnemy::ABaseEnemy()
 void ABaseEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (const auto Subsystem = GetWorld()->GetSubsystem<UToolsSubsystem>())
+	{
+		Subsystem->AddEnemy(this);
+	}
 	
 }
 
@@ -66,6 +72,11 @@ void ABaseEnemy::DestroyPawn()
 void ABaseEnemy::StopAttacking()
 {
 
+}
+
+void ABaseEnemy::SetMaxHP()
+{
+	HealthComponent->SetMaxHP();
 }
 
 void ABaseEnemy::ResetSpriteColor()
@@ -132,6 +143,12 @@ void ABaseEnemy::OnDeath()
 {
 	bIsAlive = false;
 	UnPossessed();
+
+	if (const auto Subsystem = GetWorld()->GetSubsystem<UToolsSubsystem>())
+	{
+		Subsystem->RemoveEnemy(this);
+	}
+	
 	GetWorld()->GetTimerManager().SetTimer(DestroyTimerHandle, this, &ThisClass::DestroyPawn, DestroyingCooldown);
 }
 

@@ -3,6 +3,7 @@
 
 #include "Core/ToolsSubsystem.h"
 
+#include "Enemies/BaseEnemy.h"
 #include "Enemies/EnemySpawner.h"
 #include "Tools/CheckPoint.h"
 
@@ -30,5 +31,26 @@ void UToolsSubsystem::DeactivateAllCheckPoints()
 	for (const auto CheckPoint : CheckPoints)
 	{
 		CheckPoint->SetIsActivated(false);
+	}
+}
+
+void UToolsSubsystem::AddEnemy(ABaseEnemy* Enemy)
+{
+	Enemies.AddUnique(Enemy);
+}
+
+void UToolsSubsystem::SetEnemiesMaxHealth()
+{
+	for	(const auto Enemy : Enemies)
+	{
+		Enemy->SetMaxHP();
+	}
+}
+
+void UToolsSubsystem::RemoveEnemy(ABaseEnemy* Enemy)
+{
+	if (Enemies.Contains(Enemy))
+	{
+		Enemies.Remove(Enemy);
 	}
 }

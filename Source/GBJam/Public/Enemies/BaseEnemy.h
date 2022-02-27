@@ -85,6 +85,8 @@ public:
 	virtual void StopAttacking();
 	bool GetIsAlive() const {return bIsAlive;}
 
+	void SetMaxHP();
+
 private:
 
 	FTimerHandle DestroyTimerHandle;

@@ -12,6 +12,7 @@
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/HealthComponent.h"
+#include "Core/ToolsSubsystem.h"
 #include "Projectile/GBJamProjectile.h"
 #include "Tools/LadderBlock.h"
 
@@ -127,6 +128,11 @@ void AGBJamCharacter::Fire()
 
 void AGBJamCharacter::Respawn()
 {
+	HealthComponent->SetMaxHP();
+	if (const auto Subsystem = GetWorld()->GetSubsystem<UToolsSubsystem>())
+	{
+		Subsystem->SetEnemiesMaxHealth();
+	}
 	SetActorLocation(RespawnPoint);
 	GetWorld()->GetFirstPlayerController()->Possess(this);
 	bIsAlive = true;
@@ -154,7 +160,6 @@ void AGBJamCharacter::Climbing()
 			auto MC = Cast<UCharacterMovementComponent>(GetMovementComponent());
 			if (MC)
 			{
-				UE_LOG(LogTemp, Error, TEXT("Movement FALSE"));
 				MC->Velocity = FVector::ZeroVector;
 				MC->bApplyGravityWhileJumping = false;
 				MC->GravityScale = 0;
@@ -166,7 +171,6 @@ void AGBJamCharacter::Climbing()
 			auto MC = Cast<UCharacterMovementComponent>(GetMovementComponent());
 			if (MC)
 			{
-				UE_LOG(LogTemp, Error, TEXT("Movement TRUE"));
 				MC->bApplyGravityWhileJumping = true;
 				MC->GravityScale = 2;
 			}
