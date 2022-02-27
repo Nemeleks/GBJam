@@ -125,12 +125,14 @@ protected:
 public:
 	AGBJamCharacter();
 
+	UFUNCTION(BlueprintCallable)
 	UPrimitiveComponent* GetCollider() const {return Cast<UPrimitiveComponent>(GetRootComponent());}
 	/** Returns SideViewCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetSideViewCameraComponent() const { return SideViewCameraComponent; }
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 
+	UFUNCTION(BlueprintCallable)
 	virtual void ApplyDamage(int32 DamageAmount) override;
 
 	bool GetIsAlive() const {return bIsAlive;}

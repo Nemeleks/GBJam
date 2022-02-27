@@ -34,6 +34,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	int32 GetCurrentHealth() const {return CurrentHealth;}
 
+	UFUNCTION(BlueprintCallable)
+	float GetHealthPercent() const {return (float)CurrentHealth/(float)MaxHealth;}
+
 	void TakeDamage(int32 Damage);
 	void SetMaxHP();
 
