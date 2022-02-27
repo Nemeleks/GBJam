@@ -37,7 +37,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	FVector GetRespawnPoint() const {return GetActorLocation();}
+	FVector GetRespawnPoint() const;
 
 	void SetIsActivated(bool IsActive);
 

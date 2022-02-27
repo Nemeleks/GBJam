@@ -135,6 +135,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void ApplyDamage(int32 DamageAmount) override;
 
+	UFUNCTION(BlueprintCallable)
 	bool GetIsAlive() const {return bIsAlive;}
 
 	UFUNCTION(BlueprintCallable)

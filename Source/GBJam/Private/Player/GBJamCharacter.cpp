@@ -138,6 +138,7 @@ void AGBJamCharacter::Respawn()
 	bIsAlive = true;
 	bIsHitting = false;
 	GetWorld()->GetTimerManager().ClearTimer(RespawnTimerHandle);
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }
 
 void AGBJamCharacter::FireCooldown()
@@ -307,6 +308,7 @@ void AGBJamCharacter::OnDeath()
 	bIsAlive = false;
 	UnPossessed();
 	GetWorld()->GetTimerManager().SetTimer(RespawnTimerHandle, this, &AGBJamCharacter::Respawn, RespawnCooldown);
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void AGBJamCharacter::ApplyDamage(int32 DamageAmount)

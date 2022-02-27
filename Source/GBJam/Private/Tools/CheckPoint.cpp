@@ -44,6 +44,13 @@ void ACheckPoint::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+FVector ACheckPoint::GetRespawnPoint() const
+{
+	FVector NewRespawnPoint = GetActorLocation();
+	NewRespawnPoint.Y = 0.f;
+	return NewRespawnPoint;
+}
+
 void ACheckPoint::SetIsActivated(bool IsActive)
 {
 	bIsActivated = IsActive;

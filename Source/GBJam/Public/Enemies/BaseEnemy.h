@@ -77,12 +77,15 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UFUNCTION(BlueprintCallable)
 	virtual void ApplyDamage(int32 DamageAmount) override;
 
 	float GetTargetingRange() const {return TargetingRange;}
 	float GetAttackRange() const {return AttackRange;}
 	virtual void Attack();
 	virtual void StopAttacking();
+
+	UFUNCTION(BlueprintCallable)
 	bool GetIsAlive() const {return bIsAlive;}
 
 	void SetMaxHP();
