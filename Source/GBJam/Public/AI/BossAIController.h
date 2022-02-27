@@ -19,6 +19,14 @@ public:
 
 	void SetControlledPawn(class ABoss* Enemy) { ControlledPawn = Enemy;}
 
+protected:
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Settings", meta = (ClampMin = 0), meta = (ClampMax = 10))
+	float ResetDirectionRateMin = 1.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Settings", meta = (ClampMin = 0), meta = (ClampMax = 10))
+	float ResetDirectionRateMax = 3.f;
+
 private:
 	UPROPERTY()
 	class ABoss* ControlledPawn;

@@ -64,7 +64,7 @@ void ABossAIController::Targeting()
 		if (Player->GetIsAlive() && ControlledPawn->GetIsAlive())
 		{
 			RotateToPlayer();
-			ControlledPawn->AddMovementInput(ControlledPawn->GetActorForwardVector(), 1);
+			ControlledPawn->AddMovementInput(ControlledPawn->GetActorForwardVector(), MovementValue);
 		}
 
 	}
@@ -110,7 +110,7 @@ void ABossAIController::SetNewDirection()
 	bCanChooseNewDirection = false;
 	bCanJump = FMath::RandBool();
 	MovementValue = FMath::RandRange(-1, 1);
-	ResetDirectionRate = FMath::RandRange(1, 3);
+	ResetDirectionRate = FMath::RandRange(ResetDirectionRateMin, ResetDirectionRateMax);
 	GetWorld()->GetTimerManager().SetTimer(ResetDirectionTimerHandle, this, &ABossAIController::ResetDirection, ResetDirectionRate);
 }
 
