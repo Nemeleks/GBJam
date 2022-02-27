@@ -5,6 +5,7 @@
 
 #include "AI/GBJamAIController.h"
 #include "Components/ArrowComponent.h"
+#include "Core/ToolsSubsystem.h"
 #include "Enemies/BaseEnemy.h"
 
 
@@ -30,6 +31,11 @@ void AEnemySpawner::BeginPlay()
 	Super::BeginPlay();
 	SpawnEnemy();
 	
+	if (const auto Subsystem = GetWorld()->GetSubsystem<UToolsSubsystem>())
+	{
+		Subsystem->AddEnemySpawner(this);
+	}
+	
 }
 
 // Called every frame
@@ -40,6 +46,11 @@ void AEnemySpawner::Tick(float DeltaTime)
 
 void AEnemySpawner::SpawnEnemy()
 {
+	if (SpawnedEnemy)
+	{
+		SpawnedEnemy->Destroy();
+		SpawnedEnemy = nullptr;
+	}
 	if (EnemyClass)
 	{
 		const FVector SpawnLocation = SpawnPoint->GetComponentLocation();

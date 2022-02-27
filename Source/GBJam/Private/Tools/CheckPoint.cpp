@@ -7,6 +7,7 @@
 #include "Components/BoxComponent.h"
 #include "Player/GBJamCharacter.h"
 #include "PaperSpriteComponent.h"
+#include "Core/ToolsSubsystem.h"
 
 
 // Sets default values
@@ -30,6 +31,11 @@ void ACheckPoint::BeginPlay()
 {
 	Super::BeginPlay();
 	Sprite->SetSpriteColor(FLinearColor::Red);
+
+	if (const auto Subsystem = GetWorld()->GetSubsystem<UToolsSubsystem>())
+	{
+		Subsystem->AddCheckPoint(this);
+	}
 }
 
 // Called every frame
@@ -59,6 +65,10 @@ void ACheckPoint::OverlapFunc(UPrimitiveComponent* OverlappedComponent, AActor* 
 		const auto Player = Cast<AGBJamCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
 		if (Player && OtherActor == Player && OtherComp == Player->GetCollider())
 		{
+			if (const auto Subsystem = GetWorld()->GetSubsystem<UToolsSubsystem>())
+			{
+				Subsystem->DeactivateAllCheckPoints();
+			}
 			SetIsActivated(true);
 			Player->SetRespawnPoint(GetRespawnPoint());
 		}
