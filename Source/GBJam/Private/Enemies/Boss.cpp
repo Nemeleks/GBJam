@@ -25,6 +25,12 @@ void ABoss::BeginPlay()
 	
 }
 
+void ABoss::OnDeath()
+{
+	Super::OnDeath();
+	OnBossDie.Broadcast();
+}
+
 // Called every frame
 void ABoss::Tick(float DeltaTime)
 {

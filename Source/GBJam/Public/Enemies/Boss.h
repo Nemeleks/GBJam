@@ -7,6 +7,8 @@
 #include "GameFramework/Character.h"
 #include "Boss.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBossDie);
+
 UCLASS()
 class GBJAM_API ABoss : public AScorpion
 {
@@ -23,6 +25,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
 	class UBoxComponent* HitCollider;
 
+	virtual void OnDeath() override;
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -31,4 +35,8 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UArrowComponent* GetProjectileSpawnPoint() const {return ProjectileSpawnPoint;}
+
+	
+
+	FOnBossDie OnBossDie;
 };

@@ -61,7 +61,7 @@ protected:
 	void UpdatePawn();
 
 	UFUNCTION()
-	void OnDeath();
+	virtual void OnDeath();
 
 	UFUNCTION()
 	void HitOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
