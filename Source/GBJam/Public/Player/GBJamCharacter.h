@@ -85,6 +85,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attack")
 	float FireRate = 1.f;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Climbing")
+	float UpClimbingSpeed = 500.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Climbing")
+	float RightClimbingSpeed = 250.f;
+
 	/** Called to choose the correct animation to play based on the character's movement state */
 	void UpdateAnimation();
 

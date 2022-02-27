@@ -150,14 +150,12 @@ void AGBJamCharacter::Climbing()
 	{
 		if (Cast<ALadderBlock>(HitResult.Actor))
 		{
-			
 			bCanClimb = true;
 			auto MC = Cast<UCharacterMovementComponent>(GetMovementComponent());
 			if (MC)
 			{
 				UE_LOG(LogTemp, Error, TEXT("Movement FALSE"));
 				MC->Velocity = FVector::ZeroVector;
-				MC->MaxWalkSpeed = 11000;
 				MC->bApplyGravityWhileJumping = false;
 				MC->GravityScale = 0;
 			}
@@ -171,7 +169,6 @@ void AGBJamCharacter::Climbing()
 				UE_LOG(LogTemp, Error, TEXT("Movement TRUE"));
 				MC->bApplyGravityWhileJumping = true;
 				MC->GravityScale = 2;
-				MC->MaxWalkSpeed = 300;
 			}
 		}
 	}
@@ -184,7 +181,6 @@ void AGBJamCharacter::Climbing()
 			UE_LOG(LogTemp, Error, TEXT("Movement TRUE"));
 			MC->bApplyGravityWhileJumping = true;
 			MC->GravityScale = 2;
-			MC->MaxWalkSpeed = 300;
 		}
 	}
 }
@@ -194,7 +190,7 @@ void AGBJamCharacter::Climb(float Value)
 	
 	if (bCanClimb)
 	{
-		LaunchCharacter(GetActorUpVector()*Value*500,false,true);
+		LaunchCharacter(GetActorUpVector()*Value*UpClimbingSpeed,false,true);
 	}
 	
 	
@@ -242,6 +238,19 @@ void AGBJamCharacter::UpdateAnimation()
 	else if (bIsHitting)
 	{
 		GetSprite()->SetFlipbook(HitAnimation);
+	}
+
+	else if (bCanClimb)
+	{
+		const FVector PlayerVelocity = GetVelocity();
+		const float PlayerSpeedSqr = PlayerVelocity.SizeSquared();
+
+		// Are we moving or standing still?
+		UPaperFlipbook* DesiredAnimation = (PlayerSpeedSqr > 0.0f) ? ClimbAnimation : ClimbStandAnimation;
+		if( GetSprite()->GetFlipbook() != DesiredAnimation 	)
+		{
+			GetSprite()->SetFlipbook(DesiredAnimation);
+		}
 	}
 	
 	else if (GetMovementComponent()->IsFalling())
@@ -312,7 +321,8 @@ void AGBJamCharacter::MoveRight(float Value)
 	// Apply the input to the character motion
 	if (bCanClimb)
 	{
-		AddMovementInput(FVector(500.0f, 0.0f, 0.0f), Value);
+		const FVector NewLocation = GetActorLocation() + FVector(1.f, 0.f, 0.f)*Value*RightClimbingSpeed*GetWorld()->GetDeltaSeconds();
+		SetActorLocation(NewLocation);
 	}
 	else
 	{

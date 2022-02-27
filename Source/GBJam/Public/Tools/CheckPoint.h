@@ -24,7 +24,7 @@ protected:
 	class UBoxComponent* ActivationCollider;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
-	class UPaperFlipbookComponent* Sprite;
+	class UPaperSpriteComponent* Sprite;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
 	class UArrowComponent* RespawnPoint;
@@ -39,7 +39,7 @@ public:
 
 	FVector GetRespawnPoint() const {return GetActorLocation();}
 
-	void Activate();
+	void SetIsActivated(bool IsActive);
 
 private:
 	bool bIsActivated = false;

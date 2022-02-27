@@ -6,6 +6,7 @@
 #include "PaperFlipbookComponent.h"
 #include "Components/BoxComponent.h"
 #include "Player/GBJamCharacter.h"
+#include "PaperSpriteComponent.h"
 
 
 // Sets default values
@@ -18,7 +19,7 @@ ACheckPoint::ACheckPoint()
 	SetRootComponent(ActivationCollider);
 	ActivationCollider->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OverlapFunc);
 
-	Sprite = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Sprite"));
+	Sprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("Sprite"));
 	Sprite->SetupAttachment(RootComponent);
 
 	RespawnPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("RespawnPoint"));
@@ -37,12 +38,16 @@ void ACheckPoint::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void ACheckPoint::Activate()
+void ACheckPoint::SetIsActivated(bool IsActive)
 {
-	if (!bIsActivated)
+	bIsActivated = IsActive;
+	if (bIsActivated)
 	{
-		bIsActivated = true;
 		Sprite->SetSpriteColor(FLinearColor::Green);
+	}
+	else
+	{
+		Sprite->SetSpriteColor(FLinearColor::Red);
 	}
 }
 
@@ -54,7 +59,7 @@ void ACheckPoint::OverlapFunc(UPrimitiveComponent* OverlappedComponent, AActor* 
 		const auto Player = Cast<AGBJamCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
 		if (Player && OtherActor == Player && OtherComp == Player->GetCollider())
 		{
-			Activate();
+			SetIsActivated(true);
 			Player->SetRespawnPoint(GetRespawnPoint());
 		}
 	}
