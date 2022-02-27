@@ -81,7 +81,6 @@ void ABossAIController::RotateToPlayer()
 	float ForwardAngle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(ForwardDirection, MoveDirection)));
 	if (ForwardAngle >= 90.f)
 	{
-		//UE_LOG(LogTemp, Error, TEXT("AddYaw"));
 		ControlledPawn->SetActorRotation(ControlledPawn->GetActorRotation() + FRotator(0.f,180.f,0.f));
 	}
 	
@@ -92,8 +91,7 @@ void ABossAIController::RotateToPlayer()
 	
 	float TargetingForwardAngle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(ProjectileSpawnPointForwardDirection, TargetingDirection)));
 	float TargetingUpAngle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(ProjectileSpawnPointUpDirection, TargetingDirection)));
-
-	UE_LOG(LogTemp, Error, TEXT("%f"), ForwardAngle);
+	
 	if (TargetingForwardAngle > 5.f && TargetingUpAngle < 90.f)
 	{
 		ControlledPawn->GetProjectileSpawnPoint()->SetWorldRotation(ControlledPawn->GetProjectileSpawnPoint()->GetComponentRotation() + FRotator(1.f,0.f,0.f)*GetWorld()->GetDeltaSeconds()*TargetingSpeed);

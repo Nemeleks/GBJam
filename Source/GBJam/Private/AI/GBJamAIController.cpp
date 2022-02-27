@@ -74,7 +74,6 @@ void AGBJamAIController::RotateToPlayer()
 	float ForwardAngle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(ForwardDirection, MoveDirection)));
 	if (ForwardAngle > 90.f)
 	{
-		UE_LOG(LogTemp, Error, TEXT("AddYaw"));
 		ControlledPawn->SetActorRotation(ControlledPawn->GetActorRotation() + FRotator(0.f,180.f,0.f));
 	}
 }

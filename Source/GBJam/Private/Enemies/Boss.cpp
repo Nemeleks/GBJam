@@ -36,17 +36,6 @@ void ABoss::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	DrawDebugLine(GetWorld(), GetProjectileSpawnPoint()->GetComponentLocation(),
-		GetProjectileSpawnPoint()->GetComponentLocation()+ GetProjectileSpawnPoint()->GetForwardVector()*3000.f,
-		FColor::Red);
-
-	DrawDebugLine(GetWorld(), GetProjectileSpawnPoint()->GetComponentLocation(),
-		GetProjectileSpawnPoint()->GetComponentLocation()+ GetProjectileSpawnPoint()->GetUpVector()*3000.f,
-		FColor::Blue);
-
-	DrawDebugLine(GetWorld(), GetActorLocation(),
-		GetActorLocation()+ GetActorForwardVector()*3000.f,
-		FColor::Green);
 }
 
 // Called to bind functionality to input

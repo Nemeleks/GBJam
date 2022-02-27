@@ -182,7 +182,6 @@ void AGBJamCharacter::Climbing()
 		auto MC = Cast<UCharacterMovementComponent>(GetMovementComponent());
 		if (MC)
 		{
-			UE_LOG(LogTemp, Error, TEXT("Movement TRUE"));
 			MC->bApplyGravityWhileJumping = true;
 			MC->GravityScale = 2;
 		}
