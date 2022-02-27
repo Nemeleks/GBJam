@@ -18,4 +18,6 @@ class AGBJamGameMode : public AGameModeBase
 	GENERATED_BODY()
 public:
 	AGBJamGameMode();
+
+	virtual void BeginPlay() override;
 };

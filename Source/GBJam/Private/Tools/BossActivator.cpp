@@ -26,6 +26,7 @@ void ABossActivator::OverlapFunc(UPrimitiveComponent* OverlappedComponent, AActo
 		if (GetWorld()->GetFirstPlayerController()->GetPawn() == OtherActor)
 		{
 			BossSpawner->SpawnEnemy();
+			Destroy();
 		}
 	}
 }
